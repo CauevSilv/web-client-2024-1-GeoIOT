@@ -398,7 +398,7 @@ function plotAllOnMap(points:StopPoint[]|GeometryPoint[], hasRoute?:Boolean, per
   initializePopup();
   adjustMap();
 }
-function plotStartAndEndPoints(personId:number, startDate, endDate, page:number):GeometryPoint[]{
+function plotStartAndEndPoints(personId:number, startDate:string, endDate:string, page:number):GeometryPoint[]{
   fetchGeomData(personId,startDate,endDate,page).then((points:GeometryPoint[]) => {
     if (!points) {
       toast.info("Nenhum ponto encontrado para o filtro selecionado.");
