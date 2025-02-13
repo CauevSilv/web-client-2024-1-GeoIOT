@@ -97,7 +97,7 @@ import {
   makePolygon,
   zoneOptions,
   drawedGeomsFromDb,
-  selectedHotzone, buttonsList
+  selectedHotzone, buttonsList, geomTableContent
 } from "@/services/geomService";
 import type {DrawedGeom} from "@/components/Types";
 const emit = defineEmits(['saveFilter', 'clearPoints', 'toggleSvgColor', 'saveDraw','toggleDrawing','drawType','changeZoneName','toggleZoneVisibility','drawZone','removeZoneFilters','toggledUser','removedUserButton']);
@@ -212,6 +212,10 @@ const onPersonSelect = async (selectedPerson) => {
     })).filter((geom, index, self) =>
         index === self.findIndex(g => g.label === geom.label)
     );
+    if (geomTableContent.value.headers !== undefined) {
+      geomTableContent.value.headers.push(geoms.name);
+      geomTableContent.value.data.push(geoms.idLocation as string);
+    }
   });
 };
 
@@ -405,6 +409,10 @@ onMounted(()=>{
     );
     geoms.forEach(geom => {
       drawedGeomsFromDb.push(locationDtoToDrawedGeom(geom));
+      if (geomTableContent.value.headers !== undefined) {
+        geomTableContent.value.headers.push(geom.name);
+        geomTableContent.value.data.push(geom.idLocation as string);
+      }
     })
   });
 });

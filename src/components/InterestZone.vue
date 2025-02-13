@@ -39,6 +39,9 @@
           Deletar
         </button>
       </div>
+      <div v-if="geomTableContent">
+        <GeomTable :table-props-prop ="geomTableContent"/>
+      </div>
     </div>
   </div>
 </template>
@@ -57,12 +60,14 @@ import {
   drawedGeomsFromDb,
   selectedHotzone,
   drawingActive,
-  deletedHotzones
+  deletedHotzones,
+  geomTableContent
 } from "@/services/geomService";
 import type {Polygon} from "ol/geom";
 import IconEraser from "@/components/icons/IconEraser.vue";
 import IconSaveGeometry from "@/components/icons/IconSaveGeometry.vue";
 import IconRemoveFilter from "@/components/icons/IconRemoveFilter.vue";
+import GeomTable from "@/components/GeomTable.vue";
 
 const modeOptions = [
   {label: 'Círculo', value: 'Circle'},
@@ -99,6 +104,11 @@ function saveDraw() {
     );
     geoms.forEach(geom => {
       drawedGeomsFromDb.push(locationDtoToDrawedGeom(geom));
+      if (geomTableContent.value.headers !== undefined) {
+        geomTableContent.value.headers.push(geom.name);
+        geomTableContent.value.data.push(geom.idLocation as string);
+      }
+
     });
 
     zoneName.value = null;
@@ -163,7 +173,7 @@ function deleteZone() {
       geoms.forEach(geom => {
         drawedGeomsFromDb.push(locationDtoToDrawedGeom(geom));
       });
-      deletedHotzones = ref<number>();
+      deletedHotzones == ref<number>();
     });
     deletedHotzones.value = '';
   });

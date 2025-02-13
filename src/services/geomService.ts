@@ -1,4 +1,12 @@
-import type {Coordinates, DrawedGeom, GeometryPoint, LoadedRoutes, SelectedPerson, StopPoint} from "@/components/Types";
+import type {
+    Coordinates,
+    DrawedGeom,
+    GeometryPoint,
+    LoadedRoutes,
+    SelectedPerson,
+    StopPoint,
+    TableProps
+} from "@/components/Types";
 import Point from "ol/geom/Point";
 import Feature from "ol/Feature";
 import {Fill, Icon, Stroke, Style} from "ol/style";
@@ -10,7 +18,7 @@ import {saveGeomData} from "@/services/apiService";
 import {Circle, LineString, Polygon} from "ol/geom";
 import type {Coordinate} from "ol/coordinate";
 import {circular} from 'ol/geom/Polygon';
-import {ref} from "vue";
+import {type Ref, ref} from "vue";
 
 
 export function makePointsFromArray(arrayOfGeomPoints: GeometryPoint[]|StopPoint[], pointStyle?:Style): Feature {
@@ -177,8 +185,8 @@ export function createStartAndEndPoint(arrayOfGeometryObjects:GeometryPoint[]|St
     return arrayOfFeatures;
 }
 export function locationDtoToDrawedGeom(data):DrawedGeom|null{
-    let newDrawedGeom :DrawedGeom = {};
-    let newCoordinates :Coordinates = {};
+    let newDrawedGeom :DrawedGeom= {};
+    let newCoordinates :Coordinates;
     if (data.shape =='CIRCLE'){
         newDrawedGeom.gid = data.idLocation;
         newDrawedGeom.name = data.name;
@@ -207,3 +215,4 @@ export let buttonsList = ref([]);
 export let loadedRoutes= ref<LoadedRoutes[]>([]);
 export let startPointIconMap = ref<Feature>();
 export let deletedHotzones = ref<number>();
+export let geomTableContent:Ref<TableProps>= ref<TableProps>({headers:[],data:[]});
