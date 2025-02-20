@@ -39,8 +39,8 @@
           Deletar
         </button>
       </div>
-      <div v-if="geomTableContent">
-        <GeomTable :table-props-prop ="geomTableContent"/>
+      <div v-if="zoneOptions !== undefined">
+        <GeomTable :prop ="zoneOptions"/>
       </div>
     </div>
   </div>
@@ -60,8 +60,7 @@ import {
   drawedGeomsFromDb,
   selectedHotzone,
   drawingActive,
-  deletedHotzones,
-  geomTableContent
+  deletedHotzones
 } from "@/services/geomService";
 import type {Polygon} from "ol/geom";
 import IconEraser from "@/components/icons/IconEraser.vue";
@@ -104,11 +103,6 @@ function saveDraw() {
     );
     geoms.forEach(geom => {
       drawedGeomsFromDb.push(locationDtoToDrawedGeom(geom));
-      if (geomTableContent.value.headers !== undefined) {
-        geomTableContent.value.headers.push(geom.name);
-        geomTableContent.value.data.push(geom.idLocation as string);
-      }
-
     });
 
     zoneName.value = null;

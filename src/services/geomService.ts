@@ -5,7 +5,7 @@ import type {
     LoadedRoutes,
     SelectedPerson,
     StopPoint,
-    TableProps
+    TableProps, ZoneOptions
 } from "@/components/Types";
 import Point from "ol/geom/Point";
 import Feature from "ol/Feature";
@@ -19,6 +19,7 @@ import {Circle, LineString, Polygon} from "ol/geom";
 import type {Coordinate} from "ol/coordinate";
 import {circular} from 'ol/geom/Polygon';
 import {type Ref, ref} from "vue";
+import {integer} from "@volar/language-server";
 
 
 export function makePointsFromArray(arrayOfGeomPoints: GeometryPoint[]|StopPoint[], pointStyle?:Style): Feature {
@@ -205,7 +206,7 @@ export function locationDtoToDrawedGeom(data):DrawedGeom|null{
         return newDrawedGeom;
     }
 }
-export let zoneOptions = ref([]);
+export let zoneOptions:Ref<ZoneOptions[]> = ref([]);
 export let drawedGeomsFromDb :DrawedGeom[] =[];
 export let selectedHotzone = ref<number>();
 export let drawingActive = ref(false);
@@ -215,4 +216,3 @@ export let buttonsList = ref([]);
 export let loadedRoutes= ref<LoadedRoutes[]>([]);
 export let startPointIconMap = ref<Feature>();
 export let deletedHotzones = ref<number>();
-export let geomTableContent:Ref<TableProps>= ref<TableProps>({headers:[],data:[]});

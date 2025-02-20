@@ -63,7 +63,7 @@ export type StopPoint={
     timestamp: string;
     stopLocation: any;
 }
-export type TableProps={
-    headers: string[],
-    data: string[],
+export type ZoneOptions={
+    label: string;
+    value: number;
 }

@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import type {TableProps} from "@/components/Types";
-import Tab from "primevue/tab";
-import {ref} from "vue";
+
+import {zoneOptions} from "@/services/geomService";
+import type {ZoneOptions} from "@/components/Types";
 
 const props = defineProps<{
-  TablePropsProp: TableProps;
+  prop: ZoneOptions[];
  }>();
+
+console.log(props.prop[0])
 
 
 </script>
@@ -19,10 +21,10 @@ const props = defineProps<{
     </tr>
     </thead>
     <tbody>
-    <tr v-on:load="console.log(props)" v-if="props" v-for="(header, index) in props.TablePropsProp.headers" :key="index">
-      <td>{{ header }}</td>
+    <tr v-if="props" v-for="i in prop">
+      <td>{{ i.label }}</td>
       <td>
-<!--        <input type="checkbox" v-model="item.selecionado" />-->
+        <input type="checkbox"/>
       </td>
     </tr>
     </tbody>
