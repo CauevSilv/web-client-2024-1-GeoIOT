@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import type { HistoryContent } from '../services/Types';
+import type { HistoryContent } from './Types';
 import { darkModeClick } from '@/components/stores/StoreDarkModeGetClick.js';
 import { getClick } from '@/components/stores/StoreGetClick.js';
 import { computed } from 'vue';

@@ -6,7 +6,7 @@ import type {
     SelectedPerson,
     StopPoint,
     TableProps, ZoneOptions
-} from "@/services/Types";
+} from "@/components/Types";
 import Point from "ol/geom/Point";
 import Feature from "ol/Feature";
 import {Fill, Icon, Stroke, Style} from "ol/style";

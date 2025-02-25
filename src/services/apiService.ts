@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type {DrawedGeom, GeometryPoint, Pessoa, StopPoint} from "@/services/Types";
+import type {DrawedGeom, GeometryPoint, Pessoa, StopPoint} from "@/components/Types";
 import {useToast} from "vue-toastification";
 import router from '@/router';
 import { ref } from 'vue';

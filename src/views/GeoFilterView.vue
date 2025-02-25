@@ -8,6 +8,56 @@
         @logout="logoutUser"
     />
     <div v-show="showFilters" class="filters" id="filters">
+      <div class="title" id="title">FILTRAR</div>
+      <PersonSearch
+          id="autocomplete1"
+          v-model="Person"
+          :options="PersonOption"
+          :reset="resetFilters"
+          label="Colaborador:"
+          @update:modelValue="onPersonSelect"
+      />
+      <DropDown
+          id="dropdown2"
+          v-model="Device"
+          :options="DeviceOption"
+          label="Dispositivos:"
+      />
+      <DropDown
+        id="dropdown3"
+        v-model="selectedHotzone"
+        :options="zoneOptions"
+        label="Zonas de interesse:"
+        @change="drawZoneChange"
+      />
+      <DataRangePicker
+          v-model:endDate="endDate"
+          v-model:startDate="startDate"
+          :reset="resetFilters"
+          @update:startDate="startDate = $event"
+          @update:endDate="endDate = $event"
+          @update:selectedPeriod="selectedPeriod = $event"
+      />
+      <div class="button-group">
+        <ClearButton class="full-width" @click="handleReset"></ClearButton>
+        <StartButton class="full-width" @click="handleSave"></StartButton>
+      </div>
+      <div class="buttons-container">
+        <div
+            v-for="button in buttonsList"
+            :key="button.id"
+            class="toggle-button"
+            :style="{ backgroundColor: button.active ? '#0f76b9' : '#ec1c24' }"
+            @click="toggleButton(button)"
+        >
+          <span @click.stop="removeButton(button)" class="remove-button">X</span>
+          {{ button.label }}
+        </div>
+      </div>
+      <div>
+        <History @openTeleport="paginatorHistory" :historyConfiguration="listOfHistory" :loading="loading" :person="Person" :init="endDate" :final="endDate"/>
+      </div>
+    </div>
     <div v-if="role == EnumRole.ADMIN">
     <div v-if="showZone"class="zone-component">
       <InterestZone
@@ -49,7 +99,7 @@ import {
   drawedGeomsFromDb,
   selectedHotzone, buttonsList
 } from "@/services/geomService";
-import type {DrawedGeom} from "@/services/Types";
+import type {DrawedGeom} from "@/components/Types";
 const emit = defineEmits(['saveFilter', 'clearPoints', 'toggleSvgColor', 'saveDraw','toggleDrawing','drawType','changeZoneName','toggleZoneVisibility','drawZone','removeZoneFilters','toggledUser','removedUserButton']);
 import { EnumRole } from '@/utils/EnumRole';
 import router from '@/router';

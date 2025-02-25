@@ -49,7 +49,7 @@
 <script lang="ts" setup>
 import { ref, watch, defineEmits, onMounted, onUnmounted, computed } from 'vue'
 import HistoryDetail from './HistoryDetail.vue';
-import type { HistoryConfig } from '../services/Types'
+import type { HistoryConfig } from './Types'
 import Loading from '@/components/Loading.vue';
 import { darkModeClick } from '@/components/stores/StoreDarkModeGetClick.js'
 import { getClick } from '@/components/stores/StoreGetClick.js'
