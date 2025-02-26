@@ -62,7 +62,7 @@ import {createMap, createNewVectorLayer} from "@/services/mapService";
 import {Draw, Extent} from "ol/interaction";
 import DarkOrLight from '@/views/DarkOrLight.vue';
 import IconStopPoint from "@/assets/IconStopPoint.png";
-import type {GeometryPoint, Pessoa, StopPoint} from "@/components/Types";
+import type {GeometryPoint, Pessoa, StopPoint} from "@/services/Types";
 import {
   buttonsList,
   convertToDrawedGeom,

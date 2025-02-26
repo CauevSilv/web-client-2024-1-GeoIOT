@@ -99,7 +99,7 @@ import {
   drawedGeomsFromDb,
   selectedHotzone, buttonsList
 } from "@/services/geomService";
-import type {DrawedGeom} from "@/components/Types";
+import type {DrawedGeom} from "@/services/Types";
 const emit = defineEmits(['saveFilter', 'clearPoints', 'toggleSvgColor', 'saveDraw','toggleDrawing','drawType','changeZoneName','toggleZoneVisibility','drawZone','removeZoneFilters','toggledUser','removedUserButton']);
 import { EnumRole } from '@/utils/EnumRole';
 import router from '@/router';

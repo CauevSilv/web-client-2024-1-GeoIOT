@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {zoneOptions} from "@/services/geomService";
-import type {ZoneOptions} from "@/components/Types";
+import type {ZoneOptions} from "@/services/Types";
 
 const props = defineProps<{
   prop: ZoneOptions[];

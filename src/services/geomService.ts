@@ -6,7 +6,7 @@ import type {
     SelectedPerson,
     StopPoint,
     TableProps, ZoneOptions
-} from "@/components/Types";
+} from "@/services/Types";
 import Point from "ol/geom/Point";
 import Feature from "ol/Feature";
 import {Fill, Icon, Stroke, Style} from "ol/style";
@@ -185,14 +185,14 @@ export function createStartAndEndPoint(arrayOfGeometryObjects:GeometryPoint[]|St
     let arrayOfFeatures:Feature[] = [startPoint, endPoint,startPointIconMap];
     return arrayOfFeatures;
 }
-export function locationDtoToDrawedGeom(data):DrawedGeom|null{
+export function locationDtoToDrawedGeom(data):DrawedGeom{
     let newDrawedGeom :DrawedGeom= {};
     let newCoordinates :Coordinates;
     if (data.shape =='CIRCLE'){
         newDrawedGeom.gid = data.idLocation;
         newDrawedGeom.name = data.name;
         newDrawedGeom.shape = data.shape;
-        newDrawedGeom.coordinates = null;
+        newDrawedGeom.coordinates = undefined;
         newCoordinates = data.center
         newDrawedGeom.center = newCoordinates;
         newDrawedGeom.radius = data.radius;

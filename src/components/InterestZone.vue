@@ -82,7 +82,7 @@ const storeFilters = darkModeClick();
 const toast = useToast();
 
 function saveDraw() {
-  if (!zoneName.value || zoneName.value.trim() === '') {
+  if (!zoneName.value) {
     toast.error("Por favor, insira um nome para a zona de interesse.");
     return;
   }
