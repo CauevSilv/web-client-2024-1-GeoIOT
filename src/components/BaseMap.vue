@@ -14,15 +14,6 @@
                    @removedUserButton="removedUserHandler"
     />
 
-    <div v-if="showPlayback" class="playback-layer">
-      <PlaybackControl
-        v-model:rota="route" 
-        v-model:iconMap="startPointIconMap"
-        v-model:allCoordinatesAnimation="allCoordinatesAnimation"
-        v-model:anguloInicial="anguloInicial"
-      />
-    </div>
-    <DarkOrLight class="toggle-dark-white-mode" @toggle-dark-white-mode="toggleTheme"/> 
     <div id="map" class="map-container"></div>
     <div
         class="icon-center"
@@ -81,6 +72,7 @@ import {
 import IconEndPin from "@/assets/IconEndPin.png";
 import {handleTypeError} from "@/utils/errorHandler";
 import IconPositionMap from "@/assets/IconPositionMap.png";
+import type BaseLayer from "ol/layer/Base";
 
 const toast = useToast();
 
@@ -117,41 +109,11 @@ const iconScale = ref(1);
 const iconOpacity = ref(1);
 
 function saveGeometry() {
-  map.value?.getLayers().array_.forEach(layer => {
-    if (layer.values_.layerName == 'Draw Layer') {
+  map.value?.getLayers().forEach(layer => {
+    if (layer == 'Draw Layer') {
+      console.log(layer);
       layer.getSource().getFeatures().forEach((feature: Feature) => {
-        try {
-          if (feature.getGeometry().getRadius()) {
-            saveGeomData(convertToDrawedGeom(feature, 'CIRCLE', drawGeomName.value)).then((obj) => {
-              fetchAllZones().then((geoms) => {
-                zoneOptions.value = geoms.map(geom => ({
-                  label: geom.name,
-                  value: geom.idLocation
-                })).filter((geom, index, self) =>
-                    index === self.findIndex(g => g.label === geom.label)
-                );
-                geoms.forEach(geom => {
-                  drawedGeomsFromDb.push(locationDtoToDrawedGeom(geom));
-                })
-              });
-            });
-          }
-        } catch (e) {
-          saveGeomData(convertToDrawedGeom(feature, 'POLYGON', drawGeomName.value)).then((obj) => {
-            fetchAllZones().then((geoms) => {
-              zoneOptions.value = geoms.map(geom => ({
-                label: geom.name,
-                value: geom.idLocation
-              })).filter((geom, index, self) =>
-                  index === self.findIndex(g => g.label === geom.label)
-              );
-              geoms.forEach(geom => {
-                drawedGeomsFromDb.push(locationDtoToDrawedGeom(geom));
-              })
-            });
-          });
-          handleTypeError(e);
-        }
+          saveGeomData(convertToDrawedGeom(feature, drawGeomName.value!))
       });
       source.value = new VectorSource();
     }

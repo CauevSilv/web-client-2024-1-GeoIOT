@@ -1,12 +1,4 @@
-import type {
-    Coordinates,
-    DrawedGeom,
-    GeometryPoint,
-    LoadedRoutes,
-    SelectedPerson,
-    StopPoint,
-    TableProps, ZoneOptions
-} from "@/components/Types";
+import type {Coordinates, DrawedGeom, GeometryPoint, LoadedRoutes, StopPoint, ZoneOptions} from "@/components/Types";
 import Point from "ol/geom/Point";
 import Feature from "ol/Feature";
 import {Fill, Icon, Stroke, Style} from "ol/style";
@@ -17,9 +9,8 @@ import IconEndPin from "@/assets/IconEndPin.png";
 import {saveGeomData} from "@/services/apiService";
 import {Circle, LineString, Polygon} from "ol/geom";
 import type {Coordinate} from "ol/coordinate";
-import {circular} from 'ol/geom/Polygon';
 import {type Ref, ref} from "vue";
-import {integer} from "@volar/language-server";
+import {WKT} from "ol/format";
 
 
 export function makePointsFromArray(arrayOfGeomPoints: GeometryPoint[]|StopPoint[], pointStyle?:Style): Feature {
@@ -122,39 +113,13 @@ export function makeFeature(newGeometry?: Point, pointStyle?:Style, createdPolyg
     }
     return createdFeature;
 }
-export function convertToDrawedGeom(feature :Feature,shape :string, drawGeomName: string) :DrawedGeom| null {
-    let newDrawedGeom :DrawedGeom = {};
-    let newCoordinates:Coordinates[] =[];
-    let coordinates : Coordinates = {};
-    if(shape == 'CIRCLE'){
-        newDrawedGeom.name = drawGeomName;
-        newDrawedGeom.shape = shape;
-        newDrawedGeom.coordinates = null;
-        let centerCoordinate = feature.getGeometry().getCenter()
-        coordinates = {longitude: centerCoordinate[0], latitude: centerCoordinate[1]};
-        newDrawedGeom.center= coordinates
-        newDrawedGeom.radius= feature.getGeometry().getRadius();
-        return newDrawedGeom;
-    } else {
-        newDrawedGeom.name = drawGeomName;
-        newDrawedGeom.shape = shape;
-        feature.getGeometry().getCoordinates()[0].forEach(point => {
-            newCoordinates.push(({longitude: point[0], latitude: point[1]}));
-        })
-        newDrawedGeom.coordinates = newCoordinates;
-        return newDrawedGeom;
-    }
+export function convertToDrawedGeom(feature :Feature, drawGeomName: string) : DrawedGeom {
+    const format = new WKT();
+    return {name: drawGeomName, geomwkt: format.writeGeometry(feature.getGeometry()!)}
+
 }
 export function saveGeoms(feature:Feature, drawGeomName: string){
-    try{
-        if(feature.getGeometry().getRadius()){
-            saveGeomData(convertToDrawedGeom(feature,'CIRCLE',drawGeomName)).then((obj) =>{
-            });
-        }
-    } catch (e){
-        saveGeomData(convertToDrawedGeom(feature,'POLYGON',drawGeomName));
-        handleTypeError(e);
-    }
+    saveGeomData(convertToDrawedGeom(feature,drawGeomName));
 }
 export function createStartAndEndPoint(arrayOfGeometryObjects:GeometryPoint[]|StopPoint[],anguloInicial?:number){
     let pointStartStyle:Style = new Style({
@@ -185,26 +150,11 @@ export function createStartAndEndPoint(arrayOfGeometryObjects:GeometryPoint[]|St
     let arrayOfFeatures:Feature[] = [startPoint, endPoint,startPointIconMap];
     return arrayOfFeatures;
 }
-export function locationDtoToDrawedGeom(data):DrawedGeom|null{
-    let newDrawedGeom :DrawedGeom= {};
-    let newCoordinates :Coordinates;
-    if (data.shape =='CIRCLE'){
-        newDrawedGeom.gid = data.idLocation;
-        newDrawedGeom.name = data.name;
-        newDrawedGeom.shape = data.shape;
-        newDrawedGeom.coordinates = null;
-        newCoordinates = data.center
-        newDrawedGeom.center = newCoordinates;
-        newDrawedGeom.radius = data.radius;
-        return newDrawedGeom;
-    } else {
-        newDrawedGeom.gid = data.idLocation;
-        newDrawedGeom.name = data.name;
-        newDrawedGeom.shape = data.shape;
-        newCoordinates = data.coordinates
-        newDrawedGeom.coordinates = newCoordinates;
-        return newDrawedGeom;
-    }
+export function locationDtoToDrawedGeom(data):DrawedGeom{
+    let newDrawedGeom :DrawedGeom= {geomwkt: ""};
+    newDrawedGeom.gid = data.idLocation;
+    newDrawedGeom.name = data.name;
+    return newDrawedGeom;
 }
 export let zoneOptions:Ref<ZoneOptions[]> = ref([]);
 export let drawedGeomsFromDb :DrawedGeom[] =[];

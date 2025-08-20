@@ -47,11 +47,8 @@ export type Address={
 
 export type DrawedGeom={
     gid?: number
-    name: string
-    shape: string
-    coordinates?: Coordinates[]
-    center?: Coordinates
-    radius?: number
+    name?: string
+    geomwkt: string
 }
 export type Coordinates={
     longitude: number;

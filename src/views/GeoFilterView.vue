@@ -55,7 +55,6 @@
         </div>
       </div>
       <div>
-        <History @openTeleport="paginatorHistory" :historyConfiguration="listOfHistory" :loading="loading" :person="Person" :init="endDate" :final="endDate"/>
       </div>
     </div>
     <div v-if="role == EnumRole.ADMIN">
@@ -76,7 +75,7 @@
 
 <script setup lang="ts">
 import {onMounted, ref, watch} from 'vue';
-import {fetchAllZones, fetchDevices, fetchPersons} from "@/services/apiService.ts";
+import {fetchAllZones, fetchDevices, fetchPersons} from "@/services/apiService";
 import Sidebar from "@/components/SideBar.vue";
 import DataRangePicker from "@/components/filter/DateRangePicker.vue";
 import DropDown from "@/components/filter/DropDown.vue";
@@ -144,7 +143,7 @@ function saveDraw(){
         index === self.findIndex(g => g.label === geom.label)
     );
     geoms.forEach(geom => {
-      drawedGeomsFromDb.push(locationDtoToDrawedGeom(geom));
+      drawedGeomsFromDb.push(<DrawedGeom>locationDtoToDrawedGeom(geom));
     })
     emit("saveDraw");
   });
@@ -205,14 +204,6 @@ const onPersonSelect = async (selectedPerson) => {
       handleAxiosError(error, toast);
     }
   }
-  fetchAllZones().then((geoms) =>{
-    ZoneOption.value = geoms.map(geom => ({
-      label: geom.name,
-      value: geom.idLocation
-    })).filter((geom, index, self) =>
-        index === self.findIndex(g => g.label === geom.label)
-    );
-  });
 };
 
 function toggleFilters() {
