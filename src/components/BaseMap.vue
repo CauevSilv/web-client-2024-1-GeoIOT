@@ -42,7 +42,6 @@ import type {Coordinate} from 'ol/coordinate';
 import {useToast} from "vue-toastification";
 import {boundingExtent} from 'ol/extent';
 import {
-  fetchAllZones,
   fetchGeomData,
   fetchGeomDataWithinZone,
   fetchPersonById,
@@ -109,9 +108,9 @@ const iconScale = ref(1);
 const iconOpacity = ref(1);
 
 function saveGeometry() {
-  map.value?.getLayers().forEach(layer => {
+  map.value?.getAllLayers().forEach(layer => {
     if (layer.getProperties().layerName == 'Draw Layer') {
-      layer.getSource().getFeatures().forEach((feature: Feature) => {
+      layer.values_.source.getFeatures().forEach((feature: Feature) => {
           saveGeomData(convertToDrawedGeom(feature, drawGeomName.value!))
       });
       source.value = new VectorSource();
