@@ -110,8 +110,7 @@ const iconOpacity = ref(1);
 
 function saveGeometry() {
   map.value?.getLayers().forEach(layer => {
-    if (layer == 'Draw Layer') {
-      console.log(layer);
+    if (layer.getProperties().layerName == 'Draw Layer') {
       layer.getSource().getFeatures().forEach((feature: Feature) => {
           saveGeomData(convertToDrawedGeom(feature, drawGeomName.value!))
       });
