@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts" setup>
-import {login} from "@/services/apiService";
+import {login} from "@/services/api/auth";
 import Logo from "@/assets/Logo.png";
 import {ref} from "vue";
 import router from '@/router'
