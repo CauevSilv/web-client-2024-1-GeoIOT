@@ -7,56 +7,6 @@
         :showZone="showZone"
         @logout="logoutUser"
     />
-    <div v-show="showFilters" class="filters" id="filters">
-      <div class="title" id="title">FILTRAR</div>
-      <PersonSearch
-          id="autocomplete1"
-          v-model="Person"
-          :options="PersonOption"
-          :reset="resetFilters"
-          label="Colaborador:"
-          @update:modelValue="onPersonSelect"
-      />
-      <DropDown
-          id="dropdown2"
-          v-model="Device"
-          :options="DeviceOption"
-          label="Dispositivos:"
-      />
-      <DropDown
-        id="dropdown3"
-        v-model="selectedHotzone"
-        :options="zoneOptions"
-        label="Zonas de interesse:"
-        @change="drawZoneChange"
-      />
-      <DataRangePicker
-          v-model:endDate="endDate"
-          v-model:startDate="startDate"
-          :reset="resetFilters"
-          @update:startDate="startDate = $event"
-          @update:endDate="endDate = $event"
-          @update:selectedPeriod="selectedPeriod = $event"
-      />
-      <div class="button-group">
-        <ClearButton class="full-width" @click="handleReset"></ClearButton>
-        <StartButton class="full-width" @click="handleSave"></StartButton>
-      </div>
-      <div class="buttons-container">
-        <div
-            v-for="button in buttonsList"
-            :key="button.id"
-            class="toggle-button"
-            :style="{ backgroundColor: button.active ? '#0f76b9' : '#ec1c24' }"
-            @click="toggleButton(button)"
-        >
-          <span @click.stop="removeButton(button)" class="remove-button">X</span>
-          {{ button.label }}
-        </div>
-      </div>
-      <div>
-      </div>
-    </div>
     <div v-if="role == EnumRole.ADMIN">
     <div v-if="showZone"class="zone-component">
       <InterestZone
@@ -67,6 +17,7 @@
           @toggleZoneVisibility="$emit('toggleZoneVisibility')"
           @drawZone="drawZone"
           @removeShowedZone="$emit('removeZoneFilters')"
+          @drawGeomFromGeomTable="drawGeomFromGeomTable"
       />
     </div>
     </div>
@@ -77,15 +28,8 @@
 import {onMounted, ref, watch} from 'vue';
 import {fetchAllZones, fetchDevices, fetchPersons} from "@/services/apiService";
 import Sidebar from "@/components/SideBar.vue";
-import DataRangePicker from "@/components/filter/DateRangePicker.vue";
-import DropDown from "@/components/filter/DropDown.vue";
-import History from "@/components/History.vue";
-import ClearButton from "@/components/ClearButton.vue";
-import StartButton from "@/components/StartButton.vue";
-import PersonSearch from "@/components/PersonSearch.vue";
 import {handleAxiosError} from "@/utils/errorHandler";
 import {useToast} from "vue-toastification";
-import {fetchHistory} from '@/services/apiService';
 import InterestZone from "@/components/InterestZone.vue";
 import {darkModeClick} from '@/components/stores/StoreDarkModeGetClick.js'
 import {getClick} from '@/components/stores/StoreGetClick.js'
@@ -98,7 +42,6 @@ import {
   drawedGeomsFromDb,
   selectedHotzone, buttonsList
 } from "@/services/geomService";
-import type {DrawedGeom} from "@/components/Types";
 const emit = defineEmits(['saveFilter', 'clearPoints', 'toggleSvgColor', 'saveDraw','toggleDrawing','drawType','changeZoneName','toggleZoneVisibility','drawZone','removeZoneFilters','toggledUser','removedUserButton']);
 import { EnumRole } from '@/utils/EnumRole';
 import router from '@/router';
@@ -135,18 +78,7 @@ function drawType(selectedMode:selectedMode){
   emit("drawType", selectedMode);
 }
 function saveDraw(){
-  fetchAllZones().then((geoms) =>{
-    zoneOptions.value = geoms.map(geom => ({
-      label: geom.name,
-      value: geom.idLocation
-    })).filter((geom, index, self) =>
-        index === self.findIndex(g => g.label === geom.label)
-    );
-    geoms.forEach(geom => {
-      drawedGeomsFromDb.push(<DrawedGeom>locationDtoToDrawedGeom(geom));
-    })
-    emit("saveDraw");
-  });
+  emit("saveDraw");
 }
 function toggleDrawing(){
   emit("toggleDrawing")
@@ -154,7 +86,7 @@ function toggleDrawing(){
 function changeZoneName(changeZoneName:changeZoneName){
   emit("changeZoneName", changeZoneName);
 }
-function drawZone(drawZonePolygon:drawZone){
+function drawGeomFromGeomTable(drawZonePolygon:drawZone){
   emit("drawZone", drawZonePolygon);
 }
 function drawZoneChange(){
@@ -162,6 +94,16 @@ function drawZoneChange(){
   let selectedId :number = Number(selectedHotzone.value);
   drawedGeomsFromDb.forEach((geom) =>{
     if(geom.gid == selectedId){
+      drawZonePolygon = makePolygon(geom);
+    }
+  })
+  emit('drawZone',drawZonePolygon);
+}
+
+function drawGeom(gid:number){
+  let drawZonePolygon :Polygon = {};
+  drawedGeomsFromDb.forEach((geom) =>{
+    if(geom.gid == gid){
       drawZonePolygon = makePolygon(geom);
     }
   })
@@ -325,33 +267,6 @@ function removeButton(buttonRemoved) {
 
 }
 
-const paginatorHistory = (event) => {
-  let currentPage = page.value + 1;
-  let total = Number(totalPage.value);
-  if(total >= currentPage){
-    loading.value = true;
-    getHistory(Person.value, startDate.value, endDate.value, currentPage);
-  }
-}
-
-const getHistory = async (person, startDate, endDate, pageValue) => {
-  try {
-    const historyRequest = await fetchHistory(person, startDate, endDate, pageValue);
-    listOfHistory.value = [...new Set([...listOfHistory.value, ...historyRequest.content])
-    ];
-    if (listOfHistory.value.length == 1) {
-      if (totalPage.value >= pageValue)
-        loading.value = true;
-      getHistory(person, startDate, endDate, pageValue + 1);
-    }
-    totalPage.value = historyRequest.totalPages;
-    page.value = historyRequest.pageable.pageNumber;
-    loading.value = false;
-  } catch (error){
-    console.error(error)
-    toast.error("Erro ao buscar histórico. Tente novamente mais tarde.")
-  }
-}
 function handleReset() {
   Person.value = null;
   Device.value = null;

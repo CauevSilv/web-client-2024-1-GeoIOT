@@ -40,7 +40,9 @@
         </button>
       </div>
       <div v-if="zoneOptions !== undefined">
-        <GeomTable :prop ="zoneOptions"/>
+        <GeomTable :prop ="zoneOptions"
+          @drawGeomFromGeomTable="drawGeomFromGeomTable"
+        />
       </div>
     </div>
   </div>
@@ -52,7 +54,6 @@ import {ref} from 'vue';
 import {useToast} from 'vue-toastification';
 import DropDown from "@/components/filter/DropDown.vue";
 import {darkModeClick} from "./stores/StoreDarkModeGetClick";
-import {deleteZoneByGid, fetchAllZones} from "@/services/apiService";
 import {
   locationDtoToDrawedGeom,
   makePolygon,
@@ -62,7 +63,7 @@ import {
   drawingActive,
   deletedHotzones
 } from "@/services/geomService";
-import type {Polygon} from "ol/geom";
+import type {Geometry, Polygon} from "ol/geom";
 import IconEraser from "@/components/icons/IconEraser.vue";
 import IconSaveGeometry from "@/components/icons/IconSaveGeometry.vue";
 import IconRemoveFilter from "@/components/icons/IconRemoveFilter.vue";
@@ -75,11 +76,15 @@ const modeOptions = [
 let selectedMode = ref('');
 const drawMode = ref(false);
 const zoneName = ref(null);
-const emit = defineEmits([
-  'saveDraw', 'drawType', 'toggleDrawing', 'changeZoneName', 'toggleZoneVisibility', 'drawZone', 'removeShowedZone', 'interestZonesFromDb'
-]);
 const storeFilters = darkModeClick();
 const toast = useToast();
+const emit = defineEmits([
+  'saveDraw', 'drawType', 'toggleDrawing', 'changeZoneName', 'toggleZoneVisibility', 'drawZone', 'removeShowedZone', 'interestZonesFromDb','drawGeomFromGeomTable'
+]);
+
+function drawGeomFromGeomTable(polygon: Geometry) {
+  emit('drawGeomFromGeomTable', polygon);
+}
 
 function saveDraw() {
   if (!zoneName.value || zoneName.value.trim() === '') {
@@ -93,23 +98,6 @@ function saveDraw() {
   }
 
   emit("saveDraw");
-
-  fetchAllZones().then((geoms) => {
-    zoneOptions.value = geoms.map(geom => ({
-      label: geom.name,
-      value: geom.idLocation
-    })).filter((geom, index, self) =>
-        index === self.findIndex(g => g.label === geom.label)
-    );
-    geoms.forEach(geom => {
-      drawedGeomsFromDb.push(locationDtoToDrawedGeom(geom));
-    });
-
-    zoneName.value = null;
-    selectedMode.value = null;
-    emit("toggleDrawing");
-    drawMode.value = false;
-  });
 }
 
 function eraseDraw() {
@@ -155,22 +143,6 @@ function removeShowedZone() {
 
 function deleteZone() {
   emit('removeShowedZone');
-  let selectedId: number = Number(deletedHotzones.value);
-  deleteZoneByGid(selectedId).then((geoms) => {
-    fetchAllZones().then((geoms) => {
-      zoneOptions.value = geoms.map(geom => ({
-        label: geom.name,
-        value: geom.idLocation
-      })).filter((geom, index, self) =>
-          index === self.findIndex(g => g.label === geom.label)
-      );
-      geoms.forEach(geom => {
-        drawedGeomsFromDb.push(locationDtoToDrawedGeom(geom));
-      });
-      deletedHotzones == ref<number>();
-    });
-    deletedHotzones.value = '';
-  });
 }
 
 function clearSelectedMode() {

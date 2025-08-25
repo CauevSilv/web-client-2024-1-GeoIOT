@@ -6,8 +6,8 @@ import {handleTypeError} from "@/utils/errorHandler";
 import IconPositionMap from "@/assets/IconPositionMap.png";
 import IconStartPin from "@/assets/IconStartPin.png";
 import IconEndPin from "@/assets/IconEndPin.png";
-import {saveGeomData} from "@/services/apiService";
-import {Circle, LineString, Polygon} from "ol/geom";
+import {fetchAllZones, saveGeomData} from "@/services/apiService";
+import {Circle, Geometry, LineString, Polygon} from "ol/geom";
 import type {Coordinate} from "ol/coordinate";
 import {type Ref, ref} from "vue";
 import {WKT} from "ol/format";
@@ -56,25 +56,12 @@ export function makeLineString(featureList:Feature[]):LineString{
     })
     return new LineString(lineCoordinates);
 }
-export function makePolygon(hotzone:DrawedGeom) {
-    if(hotzone.shape =='CIRCLE'){
-        let geomCenter :Coordinate;
-        geomCenter = [hotzone.center?.longitude,hotzone.center?.latitude]
-        let newTrueCircle :Circle = new Circle(geomCenter,hotzone.radius);
-        return newTrueCircle
-    }else{
-        let newArray : Coordinate[] = [];
-        let newCoordinate :Coordinate= {};
-        hotzone.coordinates.forEach((point):Coordinates=> {
-            newCoordinate = [point.longitude, point.latitude];
-            newArray.push(newCoordinate)
-        })
-        let newPolygon:Polygon = new Polygon([newArray]);
-        return newPolygon
-    }
-
+export function makePolygon(geomwkt:DrawedGeom) {
+    const wkt = new WKT();
+    const newPolygon:Geometry = wkt.readGeometry(geomwkt);
+    return newPolygon
 }
-export function makeFeature(newGeometry?: Point, pointStyle?:Style, createdPolygon?:Polygon, zIndex?:number): Feature {
+export function makeFeature(newGeometry?: Point, pointStyle?:Style, createdPolygon?:Geometry, zIndex?:number): Feature {
     let createdFeature: Feature;
     if(createdPolygon) {
         createdFeature = new Feature({geometry: createdPolygon});
@@ -154,8 +141,24 @@ export function locationDtoToDrawedGeom(data):DrawedGeom{
     let newDrawedGeom :DrawedGeom= {geomwkt: ""};
     newDrawedGeom.gid = data.idLocation;
     newDrawedGeom.name = data.name;
+    newDrawedGeom.geomwkt = data.geomWkt;
     return newDrawedGeom;
 }
+
+export function  fetchGeoms() {
+    fetchAllZones().then((geoms) =>{
+        zoneOptions.value = geoms.map(geom => ({
+            label: geom.name,
+            value: geom.idLocation
+        })).filter((geom, index, self) =>
+            index === self.findIndex(g => g.label === geom.label)
+        );
+        geoms.forEach(geom => {
+            drawedGeomsFromDb.push(<DrawedGeom>locationDtoToDrawedGeom(geom));
+        })
+    });
+}
+
 export let zoneOptions:Ref<ZoneOptions[]> = ref([]);
 export let drawedGeomsFromDb :DrawedGeom[] =[];
 export let selectedHotzone = ref<number>();

@@ -34,7 +34,7 @@ import {onMounted, ref} from 'vue';
 import {Feature, Map, Overlay} from 'ol';
 import {Vector as VectorSource, XYZ} from 'ol/source';
 import {Vector as VectorLayer} from 'ol/layer';
-import {Circle, LineString, Point, type Polygon} from 'ol/geom';
+import {Circle, type Geometry, LineString, Point, type Polygon} from 'ol/geom';
 import {Fill, Icon, Stroke, Style} from 'ol/style';
 import GeoFilterView from "@/views/GeoFilterView.vue";
 import PlaybackControl from '@/views/PlaybackControl.vue';
@@ -42,6 +42,7 @@ import type {Coordinate} from 'ol/coordinate';
 import {useToast} from "vue-toastification";
 import {boundingExtent} from 'ol/extent';
 import {
+  fetchAllZones,
   fetchGeomData,
   fetchGeomDataWithinZone,
   fetchPersonById,
@@ -58,7 +59,7 @@ import {
   convertToDrawedGeom,
   createStartAndEndPoint,
   drawedGeomsFromDb,
-  drawingActive,
+  drawingActive, fetchGeoms,
   loadedRoutes,
   locationDtoToDrawedGeom,
   makeFeature,
@@ -72,6 +73,7 @@ import IconEndPin from "@/assets/IconEndPin.png";
 import {handleTypeError} from "@/utils/errorHandler";
 import IconPositionMap from "@/assets/IconPositionMap.png";
 import type BaseLayer from "ol/layer/Base";
+import {WKT} from "ol/format";
 
 const toast = useToast();
 
@@ -111,7 +113,9 @@ function saveGeometry() {
   map.value?.getAllLayers().forEach(layer => {
     if (layer.getProperties().layerName == 'Draw Layer') {
       layer.values_.source.getFeatures().forEach((feature: Feature) => {
-          saveGeomData(convertToDrawedGeom(feature, drawGeomName.value!))
+          saveGeomData(convertToDrawedGeom(feature, drawGeomName.value!)).then( ()=> {
+            fetchGeoms();
+          })
       });
       source.value = new VectorSource();
     }
@@ -447,7 +451,7 @@ function makeLineFromPoints(featureList:Feature[], person:number) {
 }
 
 
-const adjustMap = (drawedZone?:Polygon|Circle) => {
+const adjustMap = (drawedZone?:Geometry) => {
   if(drawedZone){
     const extent = drawedZone.getExtent();
     if (map.value) {
@@ -538,11 +542,14 @@ function updateCursor() {
 }
 
 let showedZone :Polygon = {};
-function drawZone(drawZonePolygon:drawZone){
+function drawZone(drawZonePolygon){
+  const wkt = new WKT();
+  console.log(drawZonePolygon.geomwkt)
+  const geometry:Geometry = wkt.readGeometry(drawZonePolygon.geomwkt);
   zoneDrawd = true;
   showedZone = drawZonePolygon;
   let featureArray :Feature[] = [];
-  let newFeature :Feature = makeFeature(undefined,undefined,drawZonePolygon);
+  let newFeature :Feature = makeFeature(undefined,undefined,geometry);
   featureArray.push(newFeature);
   let newVectorLayer:VectorLayer = createNewVectorLayer(featureArray,'Layer das Zonas');
   map.value?.getLayers().array_.forEach((layer) =>{
@@ -563,6 +570,7 @@ onMounted(() => {
   map.value = createMap(center, zoom, projection, darkOrWhiteMap);
   source.value = new VectorSource();
   map.value.addLayer(createNewVectorLayer(source.value,'Draw Layer',source.value));
+  map.value.addLayer(createNewVectorLayer(undefined,'DataTable Layer',undefined));
   initializePopup()
 });
 </script>

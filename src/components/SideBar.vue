@@ -1,8 +1,5 @@
 <template>
   <div class="sidebar">
-    <button id="toggle-btn" class="toggle-btn" @click="onToggleFilters" @toggle-dark-white-mode="darkMode">
-      <IconFilter />
-    </button>
     <button v-if="roleValue == EnumRole.ADMIN" class="int-btn" @click="onToggleZone">
       <IconAlert />
     </button>

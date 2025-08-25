@@ -28,7 +28,7 @@ export function createNewVectorLayer(featureArray?: Feature[], layername?: strin
                 properties: {layerName: layername},
                 zIndex:1
         })
-    } else {
+    } if (featureArray) {
     return new VectorLayer({
         source: new VectorSource({
             features: featureArray,
