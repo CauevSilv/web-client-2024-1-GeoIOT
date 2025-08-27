@@ -45,7 +45,23 @@ export function createNewVectorLayer(featureArray?: Feature[], layername?: strin
         properties: {layerName: layername},
         zIndex: zIndex|2,
     });
-}}
+    } else {
+        return new VectorLayer({
+            source: new VectorSource(),
+            style: new Style({
+                fill: new Fill({
+                    color: 'rgba(255, 0, 0)'
+                }),
+                stroke: new Stroke({
+                    color: '#000000',
+                    width: 1
+                })
+            }),
+            properties: {layerName: layername},
+            zIndex: zIndex|3,
+        });
+    }
+}
 export function createTileLayer(layername?: string, darkOrWhiteMap?: string) {
     return new TileLayer({
         source: new XYZ({

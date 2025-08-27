@@ -11,14 +11,18 @@ const props = defineProps<{
 
 const selectedZones = ref<{[key: string]: boolean}>({});
 
-const toggleGeometry = (zoneId: number, isChecked: boolean) => {
-  selectedZones.value[zoneId] = isChecked;
+const toggleGeometry = (zoneId: number) => {
   const geometry = drawedGeomsFromDb.find(geom => geom.gid === zoneId);
-  emit('drawGeomFromGeomTable', geometry);
+  if (geometry?.active) {
+    geometry!.active = true;
+  } else {
+    geometry!.active = false;
+  }
+  emit('drawGeomFromGeomTable');
 };
 
 props.prop.forEach(zone => {
-  selectedZones.value[zone.id || zone.label] = false;
+  selectedZones.value[zone.value || zone.label] = false;
 });
 </script>
 
@@ -31,13 +35,13 @@ props.prop.forEach(zone => {
     </tr>
     </thead>
     <tbody>
-    <tr v-if="props.prop && props.prop.length" v-for="zone in prop" :key="zone.id || zone.label">
+    <tr v-if="props.prop && props.prop.length" v-for="zone in prop" :key="zone.value">
       <td>{{ zone.label }}</td>
       <td>
         <label class="toggle-switch">
           <input
               type="checkbox"
-              @change="toggleGeometry(zone.value, ($event.target as HTMLInputElement).checked)"
+              @change="toggleGeometry(zone.value)"
           />
           <span class="slider"></span>
         </label>

@@ -48,6 +48,7 @@ export type Address={
 export type DrawedGeom={
     gid?: number
     name?: string
+    active?: boolean
     geomwkt: string
 }
 export type Coordinates={

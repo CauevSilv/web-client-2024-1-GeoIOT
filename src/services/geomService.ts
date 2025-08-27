@@ -61,43 +61,19 @@ export function makePolygon(geomwkt:DrawedGeom) {
     const newPolygon:Geometry = wkt.readGeometry(geomwkt);
     return newPolygon
 }
-export function makeFeature(newGeometry?: Point, pointStyle?:Style, createdPolygon?:Geometry, zIndex?:number): Feature {
+export function makeFeature(createdPolygon?:Geometry[], zIndex?:number): Feature | undefined {
     let createdFeature: Feature;
-    if(createdPolygon) {
-        createdFeature = new Feature({geometry: createdPolygon});
-        createdFeature.setStyle(new Style({
-            fill: new Fill({
-                color: 'rgba(0,196,255,0.04)'
-            }),
-            stroke: new Stroke({
-                color: '#000000',
-                width: 2
-            }),
-            zIndex: zIndex|2
-        }))
-        return createdFeature;
-    }
-    if(pointStyle) {
-        createdFeature = new Feature({
-            geometry: newGeometry
-        });
-        createdFeature.setStyle(pointStyle);
-    }
-    if(!pointStyle){
-        createdFeature = new Feature({
-            geometry: newGeometry
-        });
-        createdFeature.setStyle(new Style({
-            image: new Circle({
-                radius: 3,
-                fill: new Fill({ color: 'red' }),
-                stroke: new Stroke({
-                    color: 'black',
-                    width: 1,
-                }),
-            }),
-        }));
-    }
+    createdFeature = new Feature({geometries: createdPolygon});
+    createdFeature.setStyle(new Style({
+        fill: new Fill({
+            color: 'rgba(0,196,255,0.04)'
+        }),
+        stroke: new Stroke({
+            color: '#000000',
+            width: 2
+        }),
+        zIndex: zIndex|2
+    }))
     return createdFeature;
 }
 export function convertToDrawedGeom(feature :Feature, drawGeomName: string) : DrawedGeom {

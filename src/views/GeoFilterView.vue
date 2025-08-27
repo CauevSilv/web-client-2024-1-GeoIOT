@@ -17,7 +17,7 @@
           @toggleZoneVisibility="$emit('toggleZoneVisibility')"
           @drawZone="drawZone"
           @removeShowedZone="$emit('removeZoneFilters')"
-          @drawGeomFromGeomTable="drawGeomFromGeomTable"
+          @drawGeomFromGeomTable="$emit('drawZone')"
       />
     </div>
     </div>
@@ -85,9 +85,6 @@ function toggleDrawing(){
 }
 function changeZoneName(changeZoneName:changeZoneName){
   emit("changeZoneName", changeZoneName);
-}
-function drawGeomFromGeomTable(drawZonePolygon:drawZone){
-  emit("drawZone", drawZonePolygon);
 }
 function drawZoneChange(){
   let drawZonePolygon :Polygon = {};

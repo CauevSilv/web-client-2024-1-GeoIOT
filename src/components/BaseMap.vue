@@ -74,6 +74,7 @@ import {handleTypeError} from "@/utils/errorHandler";
 import IconPositionMap from "@/assets/IconPositionMap.png";
 import type BaseLayer from "ol/layer/Base";
 import {WKT} from "ol/format";
+import {forEach} from "ol/geom/flat/segments";
 
 const toast = useToast();
 
@@ -542,14 +543,16 @@ function updateCursor() {
 }
 
 let showedZone :Polygon = {};
-function drawZone(drawZonePolygon){
+function drawZone(){
   const wkt = new WKT();
-  console.log(drawZonePolygon.geomwkt)
-  const geometry:Geometry = wkt.readGeometry(drawZonePolygon.geomwkt);
-  zoneDrawd = true;
-  showedZone = drawZonePolygon;
-  let featureArray :Feature[] = [];
-  let newFeature :Feature = makeFeature(undefined,undefined,geometry);
+  const featureArray:Feature[] = [];
+  const geometries:Geometry[] = [];
+  drawedGeomsFromDb.forEach(dbgeom => {
+    if(dbgeom.active){
+      geometries.push(wkt.readGeometry(dbgeom.geomwkt))
+    }
+  })
+  let newFeature:Feature = makeFeature(geometries,90)!;
   featureArray.push(newFeature);
   let newVectorLayer:VectorLayer = createNewVectorLayer(featureArray,'Layer das Zonas');
   map.value?.getLayers().array_.forEach((layer) =>{
@@ -557,7 +560,7 @@ function drawZone(drawZonePolygon){
     map.value?.removeLayer(layer);
   });
   map.value?.addLayer(newVectorLayer);
-  adjustMap(drawZonePolygon);
+  adjustMap(geometries[0]);
 }
 function removeZoneFilters(){
   map.value?.getLayers().array_.forEach((layer) =>{
