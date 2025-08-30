@@ -1,10 +1,10 @@
 <template>
   <div class="map-wrapper">
-<!--    <GeoFilterView class="filter-overlay"-->
-<!--                   @saveDraw="saveGeometry"-->
-<!--                   @toggleDrawing="toggleDrawing"-->
-<!--                   @drawZone="drawZone"-->
-<!--    />-->
+    <GeoFilterView class="filter-overlay"
+                   @saveDraw="saveGeometry"
+                   @toggleDrawing="toggleDrawing"
+                   @drawZone="drawZone"
+    />
 
     <div id="map" class="map-container"></div>
     <div
@@ -48,7 +48,7 @@ let map = ref<Map | null>(null);
 
 let source = ref<VectorSource>();
 let draw = ref<Draw | null>(null);
-let drawType = ref('Circle');
+let drawType = ref('Polygon');
 let drawGeomName = ref<string>();
 
 const iconOpacity = ref(1);
@@ -97,7 +97,6 @@ function toggleDrawing() {
   } else {
     startDrawing();
   }
-  updateCursor();
 }
 function startDrawing() {
   if (!map.value){
@@ -108,7 +107,7 @@ function startDrawing() {
     draw.value = new Draw({
       source: source.value,
       stopClick: true,
-      type: drawType.value as 'Circle' | 'Polygon',
+      type: drawType.value as 'Polygon',
       style: new Style({
         fill: new Fill({ color: 'rgba(110,105,105,0.52)' }),
         stroke: new Stroke({ color: '#ec3b3b', width: 4 }),
@@ -144,8 +143,6 @@ function centerMap() {
     }
 }
 
-
-let showedZone :Polygon = {};
 function drawZone(){
   const wkt = new WKT();
   const featureArray:Feature[] = [];

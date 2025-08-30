@@ -84,35 +84,6 @@ export function convertToDrawedGeom(feature :Feature, drawGeomName: string) : Dr
 export function saveGeoms(feature:Feature, drawGeomName: string){
     saveGeomData(convertToDrawedGeom(feature,drawGeomName));
 }
-export function createStartAndEndPoint(arrayOfGeometryObjects:GeometryPoint[]|StopPoint[],anguloInicial?:number){
-    let pointStartStyle:Style = new Style({
-        image: new Icon({
-            src: IconStartPin,
-            scale: 0.7,
-            anchor: [0.5, 1],
-        }),
-    });
-    let startPointIconMapStyle:Style = new Style({
-        image: new Icon({
-            src: IconPositionMap,
-            anchor: [0.5, 0.5],
-            scale: 0.2,
-            rotation: anguloInicial
-        }),
-    });
-    let endPointStyle:Style = new Style({
-        image: new Icon({
-            src: IconEndPin,
-            scale: 0.7,
-            anchor: [0.5, 1],
-        }),
-    })
-    let startPoint:Feature = makeFeature(makeSinglePoint(arrayOfGeometryObjects[0]),pointStartStyle);
-    let startPointIconMap:Feature= makeFeature(makeSinglePoint(arrayOfGeometryObjects[0]),startPointIconMapStyle);
-    let endPoint:Feature = makeFeature(makeSinglePoint(arrayOfGeometryObjects[arrayOfGeometryObjects.length - 1]),endPointStyle);
-    let arrayOfFeatures:Feature[] = [startPoint, endPoint,startPointIconMap];
-    return arrayOfFeatures;
-}
 export function locationDtoToDrawedGeom(data):DrawedGeom{
     let newDrawedGeom :DrawedGeom= {geomwkt: ""};
     newDrawedGeom.gid = data.idLocation;
@@ -139,9 +110,5 @@ export let zoneOptions:Ref<ZoneOptions[]> = ref([]);
 export let drawedGeomsFromDb :DrawedGeom[] =[];
 export let selectedHotzone = ref<number>();
 export let drawingActive = ref(false);
-export let selectedUsers = ref([]);
-export let focusedUser = ref();
 export let buttonsList = ref([]);
-export let loadedRoutes= ref<LoadedRoutes[]>([]);
-export let startPointIconMap = ref<Feature>();
 export let deletedHotzones = ref<number>();

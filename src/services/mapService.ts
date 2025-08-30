@@ -56,7 +56,7 @@ export function createNewVectorLayer(featureArray?: Feature[], layername?: strin
                 })
             }),
             properties: {layerName: layername},
-            zIndex: zIndex|3,
+            zIndex: zIndex ? 3 : 3,
         });
     }
 }

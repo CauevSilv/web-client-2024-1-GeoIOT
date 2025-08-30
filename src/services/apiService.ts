@@ -89,81 +89,6 @@ export const fetchDevices = async (): Promise<Device[]> => {
         throw error;
     }
 };
-export const fetchStopPoints = async ( person, startDate, endDate, page: number):StopPoint[]=>{
-    let getUrl = `http://localhost:8080/tracker/stop/${person}/${startDate}T00:00:00.000/${endDate}T00:00:00.000?page=${page}&size=500`;
-    try {
-        const response = await axios.get(getUrl, configHeader.value);
-        if (response.data && response.data.content.length === 0) {
-            toast.info("Nenhum ponto encontrado para o filtro selecionado.");
-            return [];
-        }
-        return response.data.content;
-    } catch (error:any) {
-        if(error.status == 403){
-            console.error("Acesso Negado:", error);
-            router.replace("/login");
-            throw error;
-        }
-        if (axios.isAxiosError(error) && error.response) {
-            const errorMessage = error.response.data?.message ||
-                "Erro desconhecido ao buscar pontos.";
-        } if(error.code == 'ERR_BAD_RESPONSE'){
-            toast.info("Nenhum ponto encontrado para o filtro selecionado.");
-        }
-        else {
-            toast.error("Erro na conexão. Tente novamente mais tarde.");
-        }
-        return [];
-    }
-}
-export const fetchHistory = async ( person:String, startDate:String, endDate:String, page:Number)=>{
-    let urlHistory = `http://localhost:8080/tracker/history?page=${page}&size=${100}`
-    try {
-        const body = {
-            personId: person,
-            init: `${startDate}T23:59:59`,
-            end: `${endDate}T23:59:59`
-        }
-        const response = await axios.post(urlHistory, body, configHeader.value);
-        return response.data;
-    } catch (error:any) {
-        if(error.status == 403){
-            console.error("Acesso Negado:", error);
-            router.replace("/login");
-            throw error;
-        }
-        console.error("Erro ao buscar dispositivos:",error);
-        throw error;
-    }
-}
-
-export const fetchGeomData = async ( person, startDate, endDate, page: number)=>{
-    let getUrl = `http://localhost:8080/tracker/period/${person}/${startDate}T00:00:00.000/${endDate}T00:00:00.000?page=${page}&size=500`;
-    try {
-        const response = await axios.get(getUrl,configHeader.value);
-        if (response.data && response.data.content.length === 0) {
-            toast.info("Nenhum ponto encontrado para o filtro selecionado.");
-            return [];
-        }
-        return response.data.content;
-    } catch (error:any) {
-        if(error.status == 403){
-            console.error("Acesso Negado:", error);
-            router.replace("/login");
-            throw error;
-        }
-        if (axios.isAxiosError(error) && error.response) {
-            const errorMessage = error.response.data?.message ||
-                "Erro desconhecido ao buscar pontos.";
-        } if(error.code == 'ERR_BAD_RESPONSE'){
-            toast.info("Nenhum ponto encontrado para o filtro selecionado.");
-        }
-        else {
-            toast.error("Erro na conexão. Tente novamente mais tarde.");
-        }
-        return [];
-    }
-}
 
 export const saveGeomData = async (drawedGeom : DrawedGeom)=>{
     let postUrl = BASE_URL_GEOM + '/save-shape'
@@ -201,31 +126,10 @@ export const fetchAllZones = async ()=>{
             router.replace("/login");
             throw error;
         }
-        if (axios.isAxiosError(error) && error.response) {
-            const errorMessage = error.response.data?.message ||
-                "Erro desconhecido ao buscar pontos.";
-        } if(error.code == 'ERR_BAD_RESPONSE'){
-            toast.info("Nenhum ponto encontrado para o filtro selecionado.");
-        }
-        else {
-            toast.error("Erro na conexão. Tente novamente mais tarde.");
-        }
-        return [];
-    }
-}
-export const fetchGeomDataWithinZone = async (startDate, endDate, zoneId:number):[]=>{
-    let getUrl = `http://localhost:8080/tracker/inside/${zoneId}/${startDate}T00:00:00.000/${endDate}T00:00:00.000`;
-    try {
-        const response = await axios.get(getUrl, configHeader.value);
-        if (response.data && response.data.length === 0) {
-            toast.info("Nenhum ponto encontrado para o filtro selecionado.");
-            return [];
-        }
-        return response.data;
-    } catch (error) {
-        if(error.status == 403){
-            router.replace("/login");
+        if(error.status == 404){
+            console.error("Nenhuma geometria encontrada:", error);
             throw error;
+
         }
         if (axios.isAxiosError(error) && error.response) {
             const errorMessage = error.response.data?.message ||
@@ -237,37 +141,5 @@ export const fetchGeomDataWithinZone = async (startDate, endDate, zoneId:number)
             toast.error("Erro na conexão. Tente novamente mais tarde.");
         }
         return [];
-    }
-}
-export const fetchPersonById = async(personID:number|undefined)=>{
-    let getUrl = BASE_URL_PERSON + '/' +personID;
-    try{
-        const response = await axios.get(getUrl, configHeader.value);
-        return response.data;
-    }catch(error){
-        if(error.status == 403){
-            console.error("Acesso Negado:", error);
-            router.replace("/login");
-            throw error;
-        }
-        if (axios.isAxiosError(error) && error.response) {
-            toast.error("Erro na conexão. Tente novamente mais tarde.");
-        }
-    }
-}
-export const deleteZoneByGid = async(gid:number):Pessoa=>{
-    let getUrl = BASE_URL_GEOM + '/delete/' + gid;
-    try{
-        const response = await axios.delete(getUrl, configHeader.value);
-        return response.data;
-    }catch(error){
-        if(error.status == 403){
-            console.error("Acesso Negado:", error);
-            router.replace("/login");
-            throw error;
-        }
-        if (axios.isAxiosError(error) && error.response) {
-            toast.error("Erro na conexão. Tente novamente mais tarde.");
-        }
     }
 }

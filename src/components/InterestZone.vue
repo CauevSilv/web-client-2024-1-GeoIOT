@@ -67,15 +67,14 @@ import type {Geometry, Polygon} from "ol/geom";
 import IconEraser from "@/components/icons/IconEraser.vue";
 import IconSaveGeometry from "@/components/icons/IconSaveGeometry.vue";
 import IconRemoveFilter from "@/components/icons/IconRemoveFilter.vue";
-import GeomTable from "@/components/GeomTable.vue";
+import GeomTable from "@/components/GeomTable/GeomTable.vue";
 
 const modeOptions = [
-  {label: 'Círculo', value: 'Circle'},
   {label: 'Polígono', value: 'Polygon'}
 ];
 let selectedMode = ref('');
 const drawMode = ref(false);
-const zoneName = ref(null);
+const zoneName = ref('');
 const storeFilters = darkModeClick();
 const toast = useToast();
 const emit = defineEmits([

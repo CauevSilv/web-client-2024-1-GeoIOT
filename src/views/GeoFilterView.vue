@@ -2,7 +2,6 @@
   <div class="filter-container" >
     <Sidebar
         @toggle-filters="toggleFilters"
-        @toggle-zone="toggleZone"
         :showFilters="showFilters"
         :showZone="showZone"
         @logout="logoutUser"
@@ -123,28 +122,6 @@ onMounted(async () => {
   }
 });
 
-const onPersonSelect = async (selectedPerson) => {
-  Person.value = selectedPerson;
-  if (selectedPerson != null) {
-    isPersonSelected.value = true;
-    try {
-      const allDevices = await fetchDevices();
-      const filteredDevices = allDevices.filter(device => {
-        return device.value === selectedPerson;
-      });
-      DeviceOption.value = filteredDevices;
-      if (filteredDevices.length > 0) {
-        Device.value = filteredDevices[0].value;
-      } else {
-        Device.value = null;
-      }
-    } catch (error) {
-      console.log("Erro ao buscar dispositivos:", error);
-      handleAxiosError(error, toast);
-    }
-  }
-};
-
 function toggleFilters() {
   showFilters.value = !showFilters.value;
   storeGetClickToggleFilters.onClickFilters = !storeGetClickToggleFilters.onClickFilters;
@@ -165,122 +142,6 @@ function toggleZone() {
   }
 }
 
-function handleSave() {
-  let hasErrors = false;
-
-  if (!Person.value) {
-    toast.error("Por favor, selecione um colaborador.");
-    hasErrors = true;
-  }
-  if (!Device.value) {
-    toast.error("Por favor, selecione um dispositivo.");
-    hasErrors = true;
-  }
-  if (!startDate.value) {
-    toast.error("Por favor, selecione uma data de início.");
-    hasErrors = true;
-  }
-  if (!endDate.value) {
-    toast.error("Por favor, selecione uma data de fim.");
-    hasErrors = true;
-  }
-
-  if (startDate.value && endDate.value) {
-    const start = new Date(startDate.value);
-    const end = new Date(endDate.value);
-
-    if (end < start) {
-      toast.error("A data de fim deve ser superior à data de início.");
-      hasErrors = true;
-    } else {
-      const diffTime = Math.abs(end - start);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays > 31) {
-        toast.error("O intervalo selecionado não pode ser maior que 31 dias.");
-        hasErrors = true;
-      }
-    }
-  let filterDataForButtons = {};
-    if (!hasErrors) {
-      if(selectedHotzone.value){
-        const filterData = {
-          person: Person.value,
-          device: Device.value,
-          startDate: startDate.value,
-          endDate: endDate.value,
-          selectedZone: selectedHotzone.value,
-        };
-        filterDataForButtons = filterData;
-        emit('saveFilter', filterData);
-      } else {
-        const filterData = {
-          person: Person.value,
-          device: Device.value,
-          startDate: startDate.value,
-          endDate: endDate.value,
-        };
-        filterDataForButtons = filterData;
-        emit('saveFilter', filterData);
-        loading.value = true;
-        page.value = 1;
-        getHistory(filterData.person, filterData.startDate, filterData.endDate, page.value);
-      }
-      if (!hasErrors && !buttonsList.value.find(button => button.id === Person.value) && selectedHotzone.value == undefined) {
-        if(buttonsList.value.length > 0){
-          buttonsList.value.push({
-            id: Person.value,
-            label: `${PersonOption.value.find(p => p.value === Person.value).label}`,
-            active: true,
-            filterButtonData: {filterDataForButtons},
-          });
-          buttonsList.value[buttonsList.value.length - 2].active = false;
-        }else{
-          buttonsList.value.push({
-            id: Person.value,
-            label: `${PersonOption.value.find(p => p.value === Person.value).label}`,
-            active: true,
-            filterButtonData: {filterDataForButtons},
-          });
-        }
-      }
-
-    }
-  }
-}
-
-function toggleButton(buttonActioned) {
-  buttonActioned.active = !buttonActioned.active;
-  buttonsList.value.forEach((button) => {
-    if (button.id !== buttonActioned.id) {
-      button.active = false;
-    }
-  })
-  emit('toggledUser',buttonActioned);
-}
-
-function removeButton(buttonRemoved) {
-  emit('removedUserButton', buttonRemoved);
-
-}
-
-function handleReset() {
-  Person.value = null;
-  Device.value = null;
-  DeviceOption.value = [];
-  startDate.value = null;
-  endDate.value = null;
-  selectedPeriod.value = '';
-  listOfHistory.value = [];
-  selectedHotzone.value = 0;
-
-  resetFilters.value = true;
-  setTimeout(() => {
-    resetFilters.value = false;
-  }, 0);
-
-  emit('clearPoints');
-}
 
 watch(() => storeFilters.onClickDarkMode,
   () => {
