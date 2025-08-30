@@ -3,21 +3,19 @@ import {Tile as TileLayer, Vector as VectorLayer} from "ol/layer";
 import {OSM, Vector as VectorSource, XYZ} from "ol/source";
 import {Fill, Stroke, Style} from "ol/style";
 
-export function createMap(center: number[], zoom: number, projection: string, darkOrWhiteMap?) {
+export function createMap(center: number[], zoom: number, projection: string) {
     return new Map({
         target: 'map',
         layers: [
             new TileLayer({
                 properties: {layerName: 'TileLayer'},
-                source: (new XYZ({
-                    url: `https://api.maptiler.com/maps/${darkOrWhiteMap}/{z}/{x}/{y}.png?key=h0XJNXXoyzrwdtWPRe9B`
-                }))
+                source: (new OSM())
             }),
         ],
         view: new View({
-            center: center.value,
-            zoom: zoom.value,
-            projection: projection.value,
+            center: center,
+            zoom: zoom,
+            projection: projection,
         }),
     })
 }
@@ -43,7 +41,7 @@ export function createNewVectorLayer(featureArray?: Feature[], layername?: strin
             })
         }),
         properties: {layerName: layername},
-        zIndex: zIndex|2,
+        zIndex: zIndex ? 2 : 2,
     });
     } else {
         return new VectorLayer({
@@ -61,13 +59,5 @@ export function createNewVectorLayer(featureArray?: Feature[], layername?: strin
             zIndex: zIndex|3,
         });
     }
-}
-export function createTileLayer(layername?: string, darkOrWhiteMap?: string) {
-    return new TileLayer({
-        source: new XYZ({
-            url: `https://api.maptiler.com/maps/${darkOrWhiteMap}/{z}/{x}/{y}.png?key=h0XJNXXoyzrwdtWPRe9B`
-        }),
-        properties: {layerName: 'TileLayer'},
-    })
 }
 
