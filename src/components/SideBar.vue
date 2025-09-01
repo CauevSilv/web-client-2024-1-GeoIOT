@@ -15,7 +15,6 @@
 <script setup lang="ts">
 import router from '@/router'
 import { getClick } from '@/components/stores/StoreGetClick.js'
-import IconFilter from "@/components/icons/IconFilter.vue";
 import IconAlert from './icons/IconInterestZone.vue';
 import { onMounted, ref } from 'vue';
 import { EnumRole } from '@/utils/EnumRole';
