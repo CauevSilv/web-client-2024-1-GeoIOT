@@ -1,61 +1,12 @@
-import type {Coordinates, DrawedGeom, GeometryPoint, LoadedRoutes, StopPoint, ZoneOptions} from "@/components/Types";
-import Point from "ol/geom/Point";
+import type {DrawedGeom, ZoneOptions} from "@/components/Types";
 import Feature from "ol/Feature";
-import {Fill, Icon, Stroke, Style} from "ol/style";
-import {handleTypeError} from "@/utils/errorHandler";
-import IconPositionMap from "@/assets/IconPositionMap.png";
-import IconStartPin from "@/assets/IconStartPin.png";
-import IconEndPin from "@/assets/IconEndPin.png";
+import {Fill, Stroke, Style} from "ol/style";
 import {fetchAllZones, saveGeomData} from "@/services/apiService";
-import {Circle, Geometry, LineString, Polygon} from "ol/geom";
-import type {Coordinate} from "ol/coordinate";
+import {Geometry} from "ol/geom";
 import {type Ref, ref} from "vue";
 import {WKT} from "ol/format";
 
 
-export function makePointsFromArray(arrayOfGeomPoints: GeometryPoint[]|StopPoint[], pointStyle?:Style): Feature {
-    let newPoints: Point[] = [];
-    let newFeatures: Feature[] = [];
-    if(arrayOfGeomPoints.length == 0){
-        return null;
-    }
-    if(arrayOfGeomPoints.length == 1) {
-        newPoints.push(makeSinglePoint(arrayOfGeomPoints[0]));
-    }else{
-        arrayOfGeomPoints.forEach(point => {
-            newPoints.push(makeSinglePoint(point));
-        })
-        newPoints.forEach(point => {
-            newFeatures.push(makeFeature(point, pointStyle));
-        })
-    }
-    return newFeatures;
-}
-export function makeSinglePoint(pointObject: GeometryPoint|StopPoint): Point {
-    try {
-        return new Point(pointObject.coordinates);
-    }catch(error) {
-        return new Point([pointObject.longitude,pointObject.latitude]);
-    }
-}
-export function makeMultiplePointsLegacy(arrayOfGeometryObjects:GeometryPoint[]|StopPoint[]):Point[]{
-    let pointFeatures :Point[] =[];
-    arrayOfGeometryObjects.forEach((pointObj) => {
-        const point = new Feature({
-            geometry: new Point([pointObj?.longitude, pointObj?.latitude]),
-        });
-        pointFeatures.push(point);
-    });
-    return pointFeatures;
-}
-export function makeLineString(featureList:Feature[]):LineString{
-    let lineCoordinates :Coordinate[] = [];
-    featureList.value.forEach((feature) =>{
-        let singleCoordinate:Coordinate = [feature.getGeometry().getCoordinates()[0],feature.getGeometry().getCoordinates()[1]]
-        lineCoordinates.push(singleCoordinate);
-    })
-    return new LineString(lineCoordinates);
-}
 export function makePolygon(geomwkt:DrawedGeom) {
     const wkt = new WKT();
     const newPolygon:Geometry = wkt.readGeometry(geomwkt);
@@ -72,7 +23,7 @@ export function makeFeature(createdPolygon?:Geometry[], zIndex?:number): Feature
             color: '#000000',
             width: 2
         }),
-        zIndex: zIndex|2
+        zIndex: zIndex ? 2 : 2
     }))
     return createdFeature;
 }

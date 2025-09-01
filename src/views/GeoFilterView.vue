@@ -2,6 +2,7 @@
   <div class="filter-container" >
     <Sidebar
         @toggle-filters="toggleFilters"
+        @toggle-zone="toggleZone"
         :showFilters="showFilters"
         :showZone="showZone"
         @logout="logoutUser"
@@ -14,7 +15,6 @@
           @drawType="drawType"
           @changeZoneName="changeZoneName"
           @toggleZoneVisibility="$emit('toggleZoneVisibility')"
-          @drawZone="drawZone"
           @removeShowedZone="$emit('removeZoneFilters')"
           @drawGeomFromGeomTable="$emit('drawZone')"
       />
@@ -24,48 +24,25 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue';
-import {fetchAllZones, fetchDevices, fetchPersons} from "@/services/apiService";
+import {onMounted, ref} from 'vue';
+import {fetchAllZones} from "@/services/apiService";
 import Sidebar from "@/components/SideBar.vue";
-import {handleAxiosError} from "@/utils/errorHandler";
-import {useToast} from "vue-toastification";
 import InterestZone from "@/components/InterestZone.vue";
-import {darkModeClick} from '@/components/stores/StoreDarkModeGetClick.js'
 import {getClick} from '@/components/stores/StoreGetClick.js'
 import { getPathColorManipulatorState } from '@/components/stores/StorePathManipulation.js';
-import type {Polygon} from "ol/geom";
 import {
   locationDtoToDrawedGeom,
-  makePolygon,
   zoneOptions,
   drawedGeomsFromDb,
-  selectedHotzone, buttonsList
 } from "@/services/geomService";
 const emit = defineEmits(['saveFilter', 'clearPoints', 'toggleSvgColor', 'saveDraw','toggleDrawing','drawType','changeZoneName','toggleZoneVisibility','drawZone','removeZoneFilters','toggledUser','removedUserButton']);
 import { EnumRole } from '@/utils/EnumRole';
 import router from '@/router';
-const toast = useToast();
-const Person = ref(null);
-const Device = ref(null);
-const PersonOption = ref([]);
-const DeviceOption = ref([]);
-const ZoneOption = ref([]);
-const listOfHistory = ref([]);
-const totalPage = ref(0);
-const page = ref(0);
-const originalPersonOption = ref([]);
+
 const showFilters = ref(false);
 const showZone = ref(false);
-const isPersonSelected = ref(false);
-const startDate = ref(null);
-const loading = ref(false);
-const endDate = ref(null);
-const selectedPeriod = ref('');
-const resetFilters = ref(false);
-const storeFilters = darkModeClick();
 const storeGetClickToggleFilters = getClick();
 const storePathManipulation = getPathColorManipulatorState();
-const selectedMode = ref(null);
 const role = ref<string>("");
 
 const logoutUser = () =>{
@@ -85,41 +62,9 @@ function toggleDrawing(){
 function changeZoneName(changeZoneName:changeZoneName){
   emit("changeZoneName", changeZoneName);
 }
-function drawZoneChange(){
-  let drawZonePolygon :Polygon = {};
-  let selectedId :number = Number(selectedHotzone.value);
-  drawedGeomsFromDb.forEach((geom) =>{
-    if(geom.gid == selectedId){
-      drawZonePolygon = makePolygon(geom);
-    }
-  })
-  emit('drawZone',drawZonePolygon);
-}
 
-function drawGeom(gid:number){
-  let drawZonePolygon :Polygon = {};
-  drawedGeomsFromDb.forEach((geom) =>{
-    if(geom.gid == gid){
-      drawZonePolygon = makePolygon(geom);
-    }
-  })
-  emit('drawZone',drawZonePolygon);
-}
 onMounted(async () => {
-  role.value = localStorage.getItem("role");
-  try {
-    let personListFromDb = await fetchPersons();
-    PersonOption.value = personListFromDb.map(person => ({
-      label: person.fullName.toUpperCase(),
-      value: person.idPerson
-    })).filter((person, index, self) =>
-        index === self.findIndex(p => p.label === person.label)
-    );
-    originalPersonOption.value = [...PersonOption.value];
-  } catch (error) {
-    console.error("Erro ao inicializar opções de pessoas:", error);
-    handleAxiosError(error, toast);
-  }
+  role.value! = localStorage.getItem("role");
 });
 
 function toggleFilters() {
@@ -142,23 +87,6 @@ function toggleZone() {
   }
 }
 
-
-watch(() => storeFilters.onClickDarkMode,
-  () => {
-
-  const filter = document.getElementById('filters')
-  const title = document.getElementById('title')
-
-  if (storeFilters.onClickDarkMode){
-    filter.style.borderRight = "4px solid #EC1C24";
-    filter.style.background = "#262626";
-    title.style.color = "#FFF";
-  } else {
-    filter.style.borderRight = "4px solid #000059",
-    filter.style.background = "#EFEFEF",
-    title.style.color = "#000";
-  }
-});
 onMounted(()=>{
   fetchAllZones().then((geoms) =>{
     zoneOptions.value = geoms.map(geom => ({

@@ -29,16 +29,6 @@
           </button>
         </div>
       </div>
-      <div class="delete-zone-container">
-        <button v-if="deletedHotzones && deletedHotzones.length > 0" @click="removeShowedZone" :class="['remove-button', { 'dark-mode-button': storeFilters.onClickDarkMode }]">
-          <IconRemoveFilter></IconRemoveFilter>
-        </button>
-        <DropDown id="delete-hotzone" label="Zonas de interesse:" :options="zoneOptions"
-                  v-model="deletedHotzones" class="dropdown" @change="drawZoneChange"/>
-        <button @click="deleteZone" :class="['delete-button', { 'dark-mode-button': storeFilters.onClickDarkMode }]">
-          Deletar
-        </button>
-      </div>
       <div v-if="zoneOptions !== undefined">
         <GeomTable :prop ="zoneOptions"
           @drawGeomFromGeomTable="drawGeomFromGeomTable"

@@ -54,7 +54,7 @@ import {ref} from 'vue';
 import Logo from "@/assets/Logo.png";
 import {useToast} from "vue-toastification";
 import {darkModeClick} from '@/components/stores/StoreDarkModeGetClick.js';
-import {registerUser, verifyIfHaveTwoEmails} from "@/services/apiService.ts";
+import {registerUser} from "@/services/apiService.ts";
 
 const toast = useToast();
 const email = ref("");
