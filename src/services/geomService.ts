@@ -5,6 +5,8 @@ import {fetchAllZones, saveGeomData} from "@/services/apiService";
 import {Geometry} from "ol/geom";
 import {type Ref, ref} from "vue";
 import {WKT} from "ol/format";
+import {Map} from "ol";
+import type {Layer} from "ol/layer";
 
 
 export function makePolygon(geomwkt:DrawedGeom) {
@@ -57,9 +59,10 @@ export function  fetchGeoms() {
     });
 }
 
+export let map = ref<Map>();
+export let drawLayer = ref<Layer>();
 export let zoneOptions:Ref<ZoneOptions[]> = ref([]);
 export let drawedGeomsFromDb :DrawedGeom[] =[];
 export let selectedHotzone = ref<number>();
 export let drawingActive = ref(false);
-export let buttonsList = ref([]);
 export let deletedHotzones = ref<number>();

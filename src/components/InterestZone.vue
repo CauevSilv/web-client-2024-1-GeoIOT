@@ -56,7 +56,6 @@ import {
 import type {Geometry, Polygon} from "ol/geom";
 import IconEraser from "@/components/icons/IconEraser.vue";
 import IconSaveGeometry from "@/components/icons/IconSaveGeometry.vue";
-import IconRemoveFilter from "@/components/icons/IconRemoveFilter.vue";
 import GeomTable from "@/components/GeomTable/GeomTable.vue";
 
 const modeOptions = [
@@ -112,26 +111,11 @@ function drawType() {
   }
 }
 
-function drawZoneChange() {
-  let drawZonePolygon: Polygon = {};
-  let selectedId: number = Number(deletedHotzones.value);
-  drawedGeomsFromDb.forEach((geom) => {
-    if (geom.gid == selectedId) {
-      drawZonePolygon = makePolygon(geom);
-    }
-  });
-  emit('drawZone', drawZonePolygon);
-}
-
 function removeShowedZone() {
   selectedHotzone.value = 0;
   emit('removeShowedZone');
   drawMode.value = false;
   deletedHotzones.value = '';
-}
-
-function deleteZone() {
-  emit('removeShowedZone');
 }
 
 function clearSelectedMode() {

@@ -28,11 +28,8 @@
         <button class="login_btn" type="submit" @click="loginValidate">Entrar</button>
       </div>
       <footer>
-        <div v-if="!loading" class="copyright">
+        <div class="copyright">
           <p>© 2024 Manolito. Todos os direitos reservados.</p>
-        </div>
-        <div>
-          <Loading v-if="loading"></Loading>
         </div>
       </footer>
     </div>
@@ -44,19 +41,15 @@ import {login} from "@/services/api/auth";
 import Logo from "@/assets/Logo.png";
 import {ref} from "vue";
 import router from '@/router'
-import Loading from "@/components/Loading.vue";
 
 const emailUser = ref<string>("");
 const passwordUser = ref<string>("");
-const loading = ref<boolean>(false);
 let response;
 
 const loginValidate = async () => {
-  loading.value = true;
   await login(emailUser.value, passwordUser.value).then(responsea => {
     response = responsea;
   });
-  loading.value = false;
   if (response) {
     router.replace("/home");
   }

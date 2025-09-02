@@ -36,8 +36,8 @@ import {createMap, createNewVectorLayer} from "@/services/mapService";
 import {Draw} from "ol/interaction";
 import {
   convertToDrawedGeom, drawedGeomsFromDb,
-  drawingActive, fetchGeoms,
-  makeFeature
+  drawingActive, drawLayer, fetchGeoms,
+  makeFeature, map
 } from "@/services/geomService";
 import {WKT} from "ol/format";
 import {forEach} from "ol/geom/flat/segments";
@@ -45,8 +45,6 @@ import {forEach} from "ol/geom/flat/segments";
 let center = ref([-60.457873,0.584053]);
 let projection = ref("EPSG:4326");
 let zoom = ref(5);
-let map = ref<Map | null>(null);
-
 let source = ref<VectorSource>();
 let draw = ref<Draw | null>(null);
 let drawType = ref('Polygon');
@@ -62,7 +60,6 @@ function saveGeometry() {
             fetchGeoms();
           })
       });
-      source.value = new VectorSource();
     }
   })
 }
@@ -103,7 +100,9 @@ function startDrawing() {
   if (!map.value){
     return;
   } else {
-
+    if (!drawLayer.value){
+      drawLayer.value = createNewVectorLayer(undefined, 'Draw Layer', source.value);
+    }
     drawingActive.value = true;
     draw.value = new Draw({
       source: source.value,
@@ -126,12 +125,6 @@ function stopDrawing() {
     draw.value = null;
     drawingActive.value = false;
   }
-  map.value?.getLayers().array_.forEach((layer:VectorLayer) =>{
-    if(layer.values_.layerName == 'Draw Layer'){
-      source.value = new VectorSource();
-      layer.setSource(source.value);
-    }
-  });
 }
 function centerMap() {
   if (map.value) {
