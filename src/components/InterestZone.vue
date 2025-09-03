@@ -51,7 +51,7 @@ import {
   drawedGeomsFromDb,
   selectedHotzone,
   drawingActive,
-  deletedHotzones, drawGeomName
+  deletedHotzones, drawGeomName, drawLayer
 } from "@/services/geomService";
 import type {Geometry, Polygon} from "ol/geom";
 import IconEraser from "@/components/icons/IconEraser.vue";
@@ -89,8 +89,8 @@ function saveDraw() {
 }
 
 function eraseDraw() {
-  emit("toggleDrawing");
-  emit("toggleDrawing");
+  drawLayer.value?.getSource().clear();
+  toast.info('Apagado!')
 }
 
 function changeZoneName() {
