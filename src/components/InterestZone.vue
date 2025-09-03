@@ -51,7 +51,7 @@ import {
   drawedGeomsFromDb,
   selectedHotzone,
   drawingActive,
-  deletedHotzones
+  deletedHotzones, drawGeomName
 } from "@/services/geomService";
 import type {Geometry, Polygon} from "ol/geom";
 import IconEraser from "@/components/icons/IconEraser.vue";
@@ -84,7 +84,7 @@ function saveDraw() {
     toast.error("Por favor, desenhe a zona de interesse antes de salvar.");
     return;
   }
-
+  drawGeomName.value = zoneName.value
   emit("saveDraw");
 }
 

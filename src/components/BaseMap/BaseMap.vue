@@ -35,7 +35,7 @@ import {
 import {createMap, createNewVectorLayer} from "@/services/mapService";
 import {Draw} from "ol/interaction";
 import {
-  convertToDrawedGeom, drawedGeomsFromDb,
+  convertToDrawedGeom, drawedGeomsFromDb, drawGeomName,
   drawingActive, drawLayer, fetchGeoms,
   makeFeature, map
 } from "@/services/geomService";
@@ -48,20 +48,17 @@ let zoom = ref(5);
 let source = ref<VectorSource>();
 let draw = ref<Draw | null>(null);
 let drawType = ref('Polygon');
-let drawGeomName = ref<string>();
 
 const iconOpacity = ref(1);
 
 function saveGeometry() {
-  map.value?.getAllLayers().forEach(layer => {
-    if (layer.getProperties().layerName == 'Draw Layer') {
-      layer.values_.source.getFeatures().forEach((feature: Feature) => {
-          saveGeomData(convertToDrawedGeom(feature, drawGeomName.value!)).then( ()=> {
-            fetchGeoms();
-          })
-      });
-    }
-  })
+  if(drawLayer.value){
+    drawLayer.value.getSource()!.getFeatures().forEach((feature: Feature) => {
+      saveGeomData(convertToDrawedGeom(feature, drawGeomName.value!)).then( ()=> {
+        fetchGeoms();
+      })
+    });
+  }
 }
 
 const adjustMap = (drawedZone?:Geometry) => {
@@ -96,29 +93,35 @@ function toggleDrawing() {
     startDrawing();
   }
 }
+
 function startDrawing() {
-  if (!map.value){
+  if (!map.value || drawingActive.value) {
     return;
-  } else {
-    if (!drawLayer.value){
-      drawLayer.value = createNewVectorLayer(undefined, 'Draw Layer', source.value);
-    }
-    drawingActive.value = true;
-    draw.value = new Draw({
-      source: source.value,
-      stopClick: true,
-      type: drawType.value as 'Polygon',
-      style: new Style({
-        fill: new Fill({ color: 'rgba(110,105,105,0.52)' }),
-        stroke: new Stroke({ color: '#ec3b3b', width: 4 }),
-      }),
-    });
   }
+
+  if (!drawLayer.value) {
+    drawLayer.value = createNewVectorLayer(undefined, 'Draw Layer', source.value);
+    map.value.addLayer(drawLayer.value);
+  }
+
+  draw.value = new Draw({
+    source: source.value,
+    stopClick: true,
+    type: drawType.value as 'Polygon',
+    style: new Style({
+      fill: new Fill({ color: 'rgba(110,105,105,0.52)' }),
+      stroke: new Stroke({ color: '#ec3b3b', width: 4 }),
+    }),
+  });
+
+  map.value.addInteraction(draw.value);
+  drawingActive.value = true;
+
   draw.value.on('drawend', (event) => {
     useToast().info('Desenho finalizado!');
   });
-  map.value.addInteraction(draw.value);
 }
+
 function stopDrawing() {
   if (draw.value && map.value) {
     map.value.removeInteraction(draw.value);

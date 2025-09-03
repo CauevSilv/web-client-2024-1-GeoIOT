@@ -61,6 +61,7 @@ export function  fetchGeoms() {
 
 export let map = ref<Map>();
 export let drawLayer = ref<Layer>();
+export let drawGeomName = ref<string>();
 export let zoneOptions:Ref<ZoneOptions[]> = ref([]);
 export let drawedGeomsFromDb :DrawedGeom[] =[];
 export let selectedHotzone = ref<number>();
