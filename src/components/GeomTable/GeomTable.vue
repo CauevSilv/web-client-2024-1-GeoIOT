@@ -13,11 +13,19 @@ const props = defineProps<{
 const selectedZones = ref<{[key: string]: boolean}>({});
 
 const toggleGeometry = (zoneId: number) => {
-  const geometry = drawedGeomsFromDb.find(geom => geom.gid === zoneId);
-  if (geometry?.active) {
-    geometry!.active = true;
-  } else {
-    geometry!.active = false;
+  let geometryIndex = drawedGeomsFromDb.findIndex(geom => geom.gid === zoneId);
+  console.log(zoneId);
+  if (geometryIndex !== -1) {
+    const geometry = drawedGeomsFromDb[geometryIndex];
+    if (geometry.active === undefined || !geometry.active) {
+      drawedGeomsFromDb.splice(geometryIndex, 1);
+      geometry.active = true;
+      drawedGeomsFromDb.push(geometry);
+    } else {
+      drawedGeomsFromDb.splice(geometryIndex, 1);
+      geometry.active = false;
+      drawedGeomsFromDb.push(geometry);
+    }
   }
   emit('drawGeomFromGeomTable');
 };
