@@ -4,6 +4,7 @@
                    @saveDraw="saveGeometry"
                    @toggleDrawing="toggleDrawing"
                    @drawZone="drawZone"
+                   @drawGeomFromGeomTable="drawGeomFromGeomTable"
     />
 
     <div id="map" class="map-container"></div>
@@ -20,10 +21,10 @@
 <script setup lang="ts">
 import './BaseMap.css'
 import {onMounted, ref} from 'vue';
-import {Feature, Map} from 'ol';
+import {Feature} from 'ol';
 import {Vector as VectorSource} from 'ol/source';
-import {Layer, Vector as VectorLayer} from 'ol/layer';
-import {type Geometry, type Polygon} from 'ol/geom';
+import {type Layer, Vector as VectorLayer} from 'ol/layer';
+import {type Geometry} from 'ol/geom';
 import {Fill, Stroke, Style} from 'ol/style';
 import GeoFilterView from "@/views/GeoFilterView.vue";
 import type {Coordinate} from 'ol/coordinate';
@@ -37,10 +38,10 @@ import {Draw} from "ol/interaction";
 import {
   convertToDrawedGeom, drawedGeomsFromDb, drawGeomName,
   drawingActive, drawLayer, fetchGeoms,
-  makeFeature, map
+  makeFeature, makePolygons, map
 } from "@/services/geomService";
 import {WKT} from "ol/format";
-import {forEach} from "ol/geom/flat/segments";
+import type {DrawedGeom} from "@/components/Types";
 
 let center = ref([-60.457873,0.584053]);
 let projection = ref("EPSG:4326");
@@ -158,6 +159,14 @@ function drawZone(){
   });
   map.value?.addLayer(newVectorLayer);
   adjustMap(geometries[0]);
+}
+
+function drawGeomFromGeomTable() {
+  if (map.value?.getAllLayers().find(layer =>  layer.getProperties().layerName! = 'Drawings')) {
+    let ont = map.value?.getAllLayers().find(layer =>  layer.getProperties().layerName! = 'Drawings')?.getSource()!
+  } else {
+    map.value?.addLayer(createNewVectorLayer([makeFeature(makePolygons(drawedGeomsFromDb))], 'Drawings'));
+  }
 }
 
 onMounted(() => {

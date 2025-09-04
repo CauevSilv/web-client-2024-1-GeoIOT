@@ -14,7 +14,17 @@ export function makePolygon(geomwkt:DrawedGeom) {
     const newPolygon:Geometry = wkt.readGeometry(geomwkt);
     return newPolygon
 }
-export function makeFeature(createdPolygon?:Geometry[], zIndex?:number): Feature | undefined {
+
+export function makePolygons(drawedGeoms:DrawedGeom[]) {
+    const wkt = new WKT();
+    const newPolygons:Geometry[] = [];
+    drawedGeoms.forEach(draws => {
+        newPolygons.push(wkt.readGeometry(draws.geomwkt));
+    })
+    return newPolygons
+}
+
+export function makeFeature(createdPolygon?:Geometry[], zIndex?:number): Feature {
     let createdFeature: Feature;
     createdFeature = new Feature({geometries: createdPolygon});
     createdFeature.setStyle(new Style({

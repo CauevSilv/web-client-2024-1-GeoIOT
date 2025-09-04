@@ -16,7 +16,7 @@
           @changeZoneName="changeZoneName"
           @toggleZoneVisibility="$emit('toggleZoneVisibility')"
           @removeShowedZone="$emit('removeZoneFilters')"
-          @drawGeomFromGeomTable="$emit('drawZone')"
+          @drawGeomFromGeomTable="$emit('drawGeomFromGeomTable')"
       />
     </div>
     </div>
@@ -35,7 +35,7 @@ import {
   zoneOptions,
   drawedGeomsFromDb,
 } from "@/services/geomService";
-const emit = defineEmits(['saveFilter', 'clearPoints', 'toggleSvgColor', 'saveDraw','toggleDrawing','drawType','changeZoneName','toggleZoneVisibility','drawZone','removeZoneFilters','toggledUser','removedUserButton']);
+const emit = defineEmits(['drawGeomFromGeomTable','saveFilter', 'clearPoints', 'toggleSvgColor', 'saveDraw','toggleDrawing','drawType','changeZoneName','toggleZoneVisibility','drawZone','removeZoneFilters','toggledUser','removedUserButton']);
 import { EnumRole } from '@/utils/EnumRole';
 import router from '@/router';
 

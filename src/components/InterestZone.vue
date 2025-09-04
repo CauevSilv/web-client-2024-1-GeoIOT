@@ -31,7 +31,7 @@
       </div>
       <div v-if="zoneOptions !== undefined">
         <GeomTable :prop ="zoneOptions"
-          @drawGeomFromGeomTable="drawGeomFromGeomTable"
+          @drawGeomFromGeomTable="$emit('drawGeomFromGeomTable')"
         />
       </div>
     </div>
@@ -69,10 +69,6 @@ const toast = useToast();
 const emit = defineEmits([
   'saveDraw', 'drawType', 'toggleDrawing', 'changeZoneName', 'toggleZoneVisibility', 'drawZone', 'removeShowedZone', 'interestZonesFromDb','drawGeomFromGeomTable'
 ]);
-
-function drawGeomFromGeomTable(polygon: Geometry) {
-  emit('drawGeomFromGeomTable', polygon);
-}
 
 function saveDraw() {
   if (!zoneName.value || zoneName.value.trim() === '') {
