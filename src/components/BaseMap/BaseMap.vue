@@ -162,10 +162,32 @@ function drawZone(){
 }
 
 function drawGeomFromGeomTable() {
-  if (map.value?.getAllLayers().find(layer =>  layer.getProperties().layerName! = 'Drawings')) {
-    let ont = map.value?.getAllLayers().find(layer =>  layer.getProperties().layerName! = 'Drawings')?.getSource()!
-  } else {
-    map.value?.addLayer(createNewVectorLayer([makeFeature(makePolygons(drawedGeomsFromDb))], 'Drawings'));
+  const layerName = 'DrawingsFromTable';
+  map.value?.getLayers().forEach(layer => {
+    if (layer.get('layerName') === layerName) {
+      map.value?.removeLayer(layer);
+    }
+  });
+
+  const activeGeoms = drawedGeomsFromDb.filter(geom => geom.active);
+
+  if (activeGeoms.length === 0) {
+    return;
+  }
+
+  const wktFormat = new WKT();
+  const features = activeGeoms.map(dbGeom => {
+    const geometry = wktFormat.readGeometry(dbGeom.geomwkt, {
+      dataProjection: 'EPSG:4326',
+      featureProjection: map.value?.getView().getProjection()
+    });
+    return new Feature(geometry);
+  });
+
+  const newVectorLayer = createNewVectorLayer(features, layerName);
+
+  if (newVectorLayer) {
+    map.value?.addLayer(newVectorLayer);
   }
 }
 
