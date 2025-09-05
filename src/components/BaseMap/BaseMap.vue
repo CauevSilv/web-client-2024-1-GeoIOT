@@ -162,7 +162,7 @@ function drawZone(){
 }
 
 function drawGeomFromGeomTable() {
-  const layerName = 'DrawingsFromTable';
+  const layerName = 'Layer das Zonas';
   map.value?.getLayers().forEach(layer => {
     if (layer.get('layerName') === layerName) {
       map.value?.removeLayer(layer);
@@ -170,7 +170,6 @@ function drawGeomFromGeomTable() {
   });
 
   const activeGeoms = drawedGeomsFromDb.filter(geom => geom.active);
-
   if (activeGeoms.length === 0) {
     return;
   }
@@ -188,6 +187,8 @@ function drawGeomFromGeomTable() {
 
   if (newVectorLayer) {
     map.value?.addLayer(newVectorLayer);
+    // map.value?.getView()
+    //     .fit(newVectorLayer.getSource()?.getFeatures()[0].getGeometry()?.getExtent()!, {padding: [50, 50, 50, 50], maxZoom: 15,duration: 1000});
   }
 }
 
