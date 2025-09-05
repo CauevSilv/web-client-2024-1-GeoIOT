@@ -16,8 +16,8 @@ td, th {
 .toggle-switch {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 34px;
+    width: 40px;
+    height: 15px;
 }
 
 .toggle-switch input {
@@ -35,16 +35,16 @@ td, th {
     bottom: 0;
     background-color: #ccc;
     transition: .4s;
-    border-radius: 34px;
+    border-radius: 3px;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
+    height: 13px;
+    width: 13px;
+    left: 0px;
+    bottom: 1px;
     background-color: white;
     transition: .4s;
     border-radius: 50%;

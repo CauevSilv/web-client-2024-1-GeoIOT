@@ -40,7 +40,7 @@ props.prop.forEach(zone => {
     <thead>
     <tr>
       <th>Nome</th>
-      <th>Selecionado</th>
+      <th></th>
     </tr>
     </thead>
     <tbody>
