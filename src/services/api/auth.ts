@@ -4,7 +4,7 @@ import {useToast} from "vue-toastification";
 const toast = useToast();
 
 
-const BASE_URL_LOGIN = "http://localhost:8080/auth/login";
+const BASE_URL_LOGIN = "http://server_4sem:8080/auth/login";
 
 export const login = async (emailUser: string, passwordUser: string) => {
     const authStore = useAuthStore();
