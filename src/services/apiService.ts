@@ -5,8 +5,8 @@ import router from '@/router';
 import { ref } from 'vue';
 
 const toast = useToast();
-const BASE_URL_GEOM = 'http://localhost:8080/location';
-const BASE_URL_REGISTER_USER = "http://localhost:8080/auth/signup";
+const BASE_URL_GEOM = 'http://server_4sem:8080/location';
+const BASE_URL_REGISTER_USER = "http://server_4sem:8080/auth/signup";
 
 const configHeader =ref<object>( {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
